@@ -1,0 +1,88 @@
+cont single_hail_container {
+    type "docker"
+    image_site "local"
+    #image "docker:///casaelyons/single_hail_container"
+    image "file://${PWD}/bin/single_hail_container.tar"
+    #profile env "SEQEXEC_CPUS" "4"
+}
+
+cont single_hail_container_nfs {
+    type "docker"
+    image_site "condorpool_nfs"
+    image "file:///nfs/shared/single_hail_container.tar"
+    mount "/nfs/shared:/nfs/shared"
+    #profile env "SEQEXEC_CPUS" "4"
+}
+
+tr gunzip {
+   site condorpool {
+   	pfn "/bin/gunzip"
+	arch "x86_64"
+	os "LINUX"
+	type "INSTALLED"
+	profile pegasus "label" "unzip"
+    }
+    site condorpool_nfs {
+        pfn "/bin/gunzip"
+  	arch "x86_64"
+	os "LINUX"
+	type "INSTALLED"
+	profile pegasus "label" "unzip"
+    }
+}
+
+tr hydroclass {
+   	site condorpool {
+	     	container "single_hail_container"
+		pfn "/opt/hydroclass/hydroclass"
+		arch "x86_64"
+		os "LINUX"
+		type "INSTALLED"
+		profile pegasus "label" "casa_job"
+		#profile pegasus "cores" "1"
+	}
+   	site condorpool_nfs {
+	     	container "single_hail_container_nfs"
+		pfn "/opt/hydroclass/hydroclass"
+		arch "x86_64"
+		os "LINUX"
+		type "INSTALLED"
+		profile pegasus "label" "casa_job"
+		#profile pegasus "cores" "1"
+	}
+}
+		
+#tr hrt {
+#	site condorpool {
+#		container "nowcast_container"
+#		pfn "/opt/mrtV2/mrtV2"
+#		arch "x86_64"
+#		os "LINUX"
+#		type "INSTALLED"
+#	}
+#	site condorpool_nfs {
+#		container "nowcast_container_nfs"
+#		pfn "/opt/mrtV2/mrtV2"
+#		arch "x86_64"
+#		os "LINUX"
+#		type "INSTALLED"
+#	}
+#}
+
+#tr merged_netcdf2png {	
+#   	site condorpool {
+#                container "nowcast_container"
+#		pfn "/opt/netcdf2png/merged_netcdf2png"	
+#		arch "x86_64"
+#		os "LINUX"
+#		type "INSTALLED"
+#	}
+ #  	site condorpool_nfs {
+  #              container "nowcast_container_nfs"
+#		pfn "/opt/netcdf2png/merged_netcdf2png"	
+#		arch "x86_64"
+#		os "LINUX"
+#		type "INSTALLED"
+#	}
+#}
+
