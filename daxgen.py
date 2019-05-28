@@ -45,20 +45,20 @@ class single_hail_workflow(object):
             file_ymd = file_time[0:8]
             file_hms = file_time[9:15]
             
-            print file_ymd
-            print file_hms
+            #print file_ymd
+            #print file_hms
                 
             radarloc = self.nc_fn[-1][0:string_end]
-            print radarloc
+            #print radarloc
 
             radarconfigfilename = get_radar_config(radarloc)
-            print radarconfigfilename
+            #print radarconfigfilename
             radarconfigfile = File(radarconfigfilename)
             
             soundingfile = File("current_sounding.txt")
                 
             hydroclass_outputfile = File(radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf");
-            print hydroclass_outputfile
+            #print hydroclass_outputfile
             
             hydroclass_job = Job("hydroclass")
             hydroclass_job.addArguments("-c", radarconfigfile, "-o", hydroclass_outputfile, "-t", "1", "-m", "VHS", "-d", "membership_functions/", "-s", soundingfile);
