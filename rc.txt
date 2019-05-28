@@ -1,3 +1,4 @@
-#nexrad_ref.png		file://${PWD}/input/nexrad_ref.png	site="local"
-#mrtV2_config.txt	file://${PWD}/input/mrtV2_config.txt	site="local"
+HC_XMDL.tx.ini		file://${PWD}/input/HC_XMDL.tx.ini	site="local"
+HC_XUTA.tx.ini		file://${PWD}/input/HC_XUTA.tx.ini	site="local"
+current_sounding.txt	file://${PWD}/input/current_sounding.txt	site="local"
 #.*                             file://${PWD}/input/[0]                             site="local"    regex="true"

@@ -43,7 +43,7 @@ sub file_monitor {
     
     for ($i=0; $i < 9000000000; $i++) {
 	my @changes = $dir_monitor->scan;   
-	sleep 10;
+	sleep 1;
     }
     
     sub new_files 
@@ -61,10 +61,10 @@ sub file_monitor {
             ($pathstr, $filename) = $file =~ m|^(.*[/\\])([^/\\]+?)$|;
 	    my $filetype = "netcdf";
 	    if (index($filename, $filetype) != -1) {
-		#my $cploc = $workflow_dir . "/input/" . $filename;
-		#copy($file, $cploc);
+		my $cploc = $workflow_dir . "/input/" . $filename;
+		copy($file, $cploc);
 		&trigger_pegasus($filename);
-		#unlink $file;
+		unlink $file;
 	    }
 	}
     }
