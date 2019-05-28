@@ -8,6 +8,16 @@ from Pegasus.DAX3 import *
 from datetime import datetime
 from argparse import ArgumentParser
 
+def get_radar_config(radname):
+    radarconf = {
+        "arlington.tx": "HC_XUTA.tx.ini",
+        "mesquite.tx": "HC_XUTA.tx.ini",
+        "ftworth.tx": "HC_XUTA.tx.ini",
+        "midlothian.tx": "HC_XMDL.tx.ini",
+    }
+    radarassoc = radarconf.get(radname, lambda: "HC_XUTA.tx.ini");
+    return radarassoc
+
 class single_hail_workflow(object):
     def __init__(self, outdir, nc_fn):
         self.outdir = outdir
@@ -22,23 +32,22 @@ class single_hail_workflow(object):
         for f in self.nc_fn:
             f = f.split("/")[-1]
             if f.endswith(".gz"):
+                radar_input = f[:-3]
                 unzip = Job("gunzip")
                 unzip.addArguments(f)
                 unzip.uses(f, link=Link.INPUT)
                 unzip.uses(radar_input, link=Link.OUTPUT, transfer=False, register=False)
                 dax.addJob(unzip)
             else:
-                #extract time
-                string_end = self.nc_fn[-1].find(".")
-                file_time = self.nc_fn[-1][string_end-15:string_end]
+                string_end = self.nc_fn[-1].find("-")
+                file_time = self.nc_fn[-1][string_end+1:string_end+16]
                 file_ymd = file_time[0:8]
-                file_hms = file_time[8:14]
-                print file_time
+                file_hms = file_time[9:15]
+                
                 print file_ymd
                 print file_hms
                 
-                radarloc_end = self.nc_fn[-1].find("-")
-                radarloc = self.nc_fn[-1][0:radarloc_end]
+                radarloc = self.nc_fn[-1][0:string_end]
                 print radarloc
 
                 radarconfigfilename = get_radar_config(radarloc)
@@ -47,7 +56,8 @@ class single_hail_workflow(object):
                 
                 soundingfile = File("current_sounding.txt")
                 
-                hydroclass_outputfile = File(radarloc + "-" + file_ymd + "-" + file_hms + "hc.netcdf");
+                hydroclass_outputfile = File(radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf");
+                print hydroclass_outputfile
 
                 hydroclass_job = Job("hydroclass")
                 hydroclass_job.addArguments("-c", radarconfigfile, "-o", hydroclass_outputfile, "-t", "1", "-m", "VHS", "-d", "membership_functions/", "-s", soundingfile);
@@ -67,16 +77,6 @@ class single_hail_workflow(object):
     def generate_workflow(self):
         # Generate dax
         self.generate_dax()
-
-    def get_radar_config(radname):
-        radarconf = { 
-            "arlington.tx": "HC_XUTA.tx.ini";
-            "mesquite.tx": "HC_XUTA.tx.ini";
-            "ftworth.tx": "HC_XUTA.tx.ini";
-            "midlothian.tx": "HC_XMDL.tx.ini";
-        }
-        radarassoc = radarconf.get(radname, lambda: "HC_XUTA.tx.ini");
-        return radarassoc
         
 if __name__ == '__main__':
     parser = ArgumentParser(description="Single Hail Workflow")
