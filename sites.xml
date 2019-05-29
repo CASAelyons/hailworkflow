@@ -19,9 +19,9 @@
       <profile namespace="pegasus" key="style">condor</profile>
       <profile namespace="pegasus" key="data.configuration">condorio</profile>
       <profile namespace="condor" key="universe">vanilla</profile>
-      <profile namespace="pegasus" key="clusters.size">1</profile>
-      <profile namespace="pegasus" key="cores">1</profile>
-      <profile namespace="pegasus" key="memory">2048</profile>
+      <!--profile namespace="pegasus" key="clusters.size">1</profile> -->
+      <!--<profile namespace="pegasus" key="cores">1</profile> -->
+      <!--profile namespace="pegasus" key="memory">2048</profile> -->
    </site>
    
    <site handle="condorpool_nfs" arch="x86_64" os="LINUX">
