@@ -63,8 +63,9 @@ class single_hail_workflow(object):
             #print hydroclass_outputfile
             
             hydroclass_job = Job("hydroclass")
-            hydroclass_job.addArguments("-c", radarconfigfile, "-o", hydroclass_outputfile, "-t", "1", "-m", "VHS", "-d", "membership_functions/", "-s", soundingfile);
-
+            hydroclass_job.addArguments(radar_input)
+            hydroclass_job.addArguments("-c", radarconfigfile, "-o", hydroclass_outputfile, "-t", "1", "-m", "VHS", "-d", "membership_functions/", "-s", soundingfile)
+            
             hydroclass_job.uses(radar_input, link=Link.INPUT)
             hydroclass_job.uses(radarconfigfile, link=Link.INPUT)
             hydroclass_job.uses(soundingfile, link=Link.INPUT)
