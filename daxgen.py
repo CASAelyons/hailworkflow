@@ -40,6 +40,7 @@ class single_hail_workflow(object):
                 dax.addJob(unzip)
             else:
                 radar_input = f;
+
             string_end = self.nc_fn[-1].find("-")
             file_time = self.nc_fn[-1][string_end+1:string_end+16]
             file_ymd = file_time[0:8]
@@ -58,6 +59,7 @@ class single_hail_workflow(object):
             soundingfile = File("current_sounding.txt")
                 
             hydroclass_outputfile = File(radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf");
+            hydroclass_cfradial = File(radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf.cfradial");
             #print hydroclass_outputfile
             
             hydroclass_job = Job("hydroclass")
@@ -67,6 +69,7 @@ class single_hail_workflow(object):
             hydroclass_job.uses(radarconfigfile, link=Link.INPUT)
             hydroclass_job.uses(soundingfile, link=Link.INPUT)
             hydroclass_job.uses(hydroclass_outputfile, link=Link.OUTPUT, transfer=True, register=False)
+            hydroclass_job.uses(hydroclass_cfradial, link=Link.OUTPUT, transfer=True, register=False)
             #hydroclass_job.profile("pegasus", "label", "label")
             dax.addJob(hydroclass_job)
 
