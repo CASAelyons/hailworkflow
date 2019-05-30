@@ -32,14 +32,14 @@ class single_hail_workflow(object):
         for f in self.nc_fn:
             f = f.split("/")[-1]
             if f.endswith(".gz"):
-                radar_input = f[:-3]
+                radarfilename = f[:-3]
                 unzip = Job("gunzip")
                 unzip.addArguments(f)
                 unzip.uses(f, link=Link.INPUT)
                 unzip.uses(radar_input, link=Link.OUTPUT, transfer=False, register=False)
                 dax.addJob(unzip)
             else:
-                radar_input = f;
+                radarfilename = f;
 
             string_end = self.nc_fn[-1].find("-")
             file_time = self.nc_fn[-1][string_end+1:string_end+16]
@@ -49,28 +49,30 @@ class single_hail_workflow(object):
             #print file_ymd
             #print file_hms
                 
+            radarfile = File(radarfilename)
             radarloc = self.nc_fn[-1][0:string_end]
-            #print radarloc
 
             radarconfigfilename = get_radar_config(radarloc)
-            #print radarconfigfilename
             radarconfigfile = File(radarconfigfilename)
-            
-            soundingfile = File("current_sounding.txt")
+     
+            soundingfilename = "current_sounding.txt"
+            soundingfile = File(soundingfilename)
                 
-            hydroclass_outputfile = File(radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf");
-            hydroclass_cfradial = File(radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf.cfradial");
-            #print hydroclass_outputfile
+            hydroclass_outputfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf"
+            hydroclass_outputfile = File(hydroclass_outputfilename)
+
+            hydroclass_cfradialfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf.cfradial"
+            hydroclass_cfradialfile = File(hydroclass_cfradialfilename)
             
             hydroclass_job = Job("hydroclass")
-            hydroclass_job.addArguments(radar_input)
-            hydroclass_job.addArguments("-c", radarconfigfile, "-o", hydroclass_outputfile, "-t", "1", "-m", "VHS", "-d", "membership_functions/", "-s", soundingfile)
+            hydroclass_job.addArguments(radarfilename)
+            hydroclass_job.addArguments("-c", radarconfigfilename, "-o", hydroclass_outputfilename, "-t", "1", "-m", "VHS", "-d", "membership_functions/", "-s", soundingfilename)
             
-            hydroclass_job.uses(radar_input, link=Link.INPUT)
+            hydroclass_job.uses(radarfile, link=Link.INPUT)
             hydroclass_job.uses(radarconfigfile, link=Link.INPUT)
             hydroclass_job.uses(soundingfile, link=Link.INPUT)
             hydroclass_job.uses(hydroclass_outputfile, link=Link.OUTPUT, transfer=True, register=False)
-            hydroclass_job.uses(hydroclass_cfradial, link=Link.OUTPUT, transfer=True, register=False)
+            hydroclass_job.uses(hydroclass_cfradialfile, link=Link.OUTPUT, transfer=True, register=False)
             #hydroclass_job.profile("pegasus", "label", "label")
             dax.addJob(hydroclass_job)
 
