@@ -35,8 +35,9 @@ class single_hail_workflow(object):
                 radarfilename = f[:-3]
                 unzip = Job("gunzip")
                 unzip.addArguments(f)
-                unzip.uses(f, link=Link.INPUT)
-                unzip.uses(radar_input, link=Link.OUTPUT, transfer=False, register=False)
+                zipfile = File(f)
+                unzip.uses(zipfile, link=Link.INPUT)
+                unzip.uses(radarfilename, link=Link.OUTPUT, transfer=False, register=False)
                 dax.addJob(unzip)
             else:
                 radarfilename = f;
