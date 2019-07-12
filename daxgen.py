@@ -14,6 +14,7 @@ def get_radar_config(radname):
         "mesquite.tx": "HC_XUTA.tx.ini",
         "ftworth.tx": "HC_XUTA.tx.ini",
         "midlothian.tx": "HC_XMDL.tx.ini",
+        "burleson.tx": "HC_KFWS.tx.ini"
     }
     radarassoc = radarconf.get(radname, lambda: "HC_XUTA.tx.ini");
     return radarassoc
@@ -65,6 +66,17 @@ class single_hail_workflow(object):
             hydroclass_cfradialfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf.cfradial"
             hydroclass_cfradialfile = File(hydroclass_cfradialfilename)
             
+            if radarloc == 'burleson.tx':
+                incfradialfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf.in.cfradial"
+                incfradialfile = File(incfradialfilename)
+                cfconv_job = Job("RadxConvert")
+                cfconv_job.addArguments("-cfradial", "-f", radarfilename, "-outdir", "./", "-outname", incfradialfilename)
+                cfconv_job.uses(radarfile, link=Link.INPUT)
+                cfconv_job.uses(incfradialfile, link=Link.OUTPUT, transfer=False, register=False)
+                radarfilename = incfradialfilename
+                radarfile = File(incfradialfilename)
+                dax.addJob(cfconv_job)
+                
             hydroclass_job = Job("hydroclass")
             hydroclass_job.addArguments(radarfilename)
             hydroclass_job.addArguments("-c", radarconfigfilename, "-o", hydroclass_outputfilename, "-t", "1", "-m", "VHS", "-d", "membership_functions/", "-s", soundingfilename)
