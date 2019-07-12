@@ -51,7 +51,40 @@ tr hydroclass {
 		#profile pegasus "cores" "1"
 	}
 }
-		
+
+tr RadxConvert {
+        site condorpool {
+	     	 container "single_hail_container"
+                 pfn "/opt/hydroclass/RadxConvert"
+                 arch "x86_64"
+                 os "LINUX"
+		 type "INSTALLED"
+		 profile pegasus "label" "casa_job"
+	}
+}
+
+tr Radx2Grid {
+        site condorpool {
+       	    	container "single_hail_container"
+		pfn "/opt/hydroclass/RadxConvert"
+		arch "x86_64"
+		os "LINUX"
+		type "INSTALLED"
+		profile pegasus "label" "casa_job"
+	}
+}
+
+tr hc_composite {
+   	site condorpool {
+	     	container "single_hail_container"
+		pfn "/opt/hydroclass/hc_composite"
+		arch "x86_64"
+		os "LINUX"
+		type "INSTALLED"
+		profile pegasus "label" "casa_job"
+	}
+}
+
 #tr hrt {
 #	site condorpool {
 #		container "nowcast_container"
