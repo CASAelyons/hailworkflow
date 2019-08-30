@@ -1,15 +1,15 @@
 cont single_hail_container {
-    type "docker"
-    image_site "local"
+    type "singularity"
+    image_site "condorpool"
     #image "docker:///casaelyons/single_hail_container"
-    image "file://${PWD}/bin/single_hail_container.tar"
+    image "file://${PWD}/bin/hail_singularity.img"
     #profile env "SEQEXEC_CPUS" "4"
 }
 
 cont single_hail_container_nfs {
-    type "docker"
+    type "singularity"
     image_site "condorpool_nfs"
-    image "file:///nfs/shared/single_hail_container.tar"
+    image "file:///nfs/shared/hail_singularity.img"
     mount "/nfs/shared:/nfs/shared"
     #profile env "SEQEXEC_CPUS" "4"
 }
