@@ -59,14 +59,16 @@ class single_hail_workflow(object):
      
             soundingfilename = "current_sounding.txt"
             soundingfile = File(soundingfilename)
-                
-            hydroclass_outputfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf"
-            hydroclass_outputfile = File(hydroclass_outputfilename)
-
-            hydroclass_cfradialfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf.cfradial"
-            hydroclass_cfradialfile = File(hydroclass_cfradialfilename)
+            
+            hydroclass_outputcartfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.cart.netcdf"
+            hydroclass_outputcartfile = File(hydroclass_outputcartfilename)
+            
+            radx_configfilename = "/opt/hydroclass/init/radx/" + radarloc + "_latlon.txt"
+            radx_configfile = File(radx_configfilename)
             
             if radarloc == 'burleson.tx':
+                nexrad_hydroclass_outputfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf.cfradial"
+                nexrad_hydroclass_outputfile = File(nexrad_hydroclass_outputfilename)
                 incfradialfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf.in.cfradial"
                 incfradialfile = File(incfradialfilename)
                 cfconv_job = Job("RadxConvert")
@@ -76,19 +78,42 @@ class single_hail_workflow(object):
                 radarfilename = incfradialfilename
                 radarfile = File(incfradialfilename)
                 dax.addJob(cfconv_job)
-                
-            hydroclass_job = Job("hydroclass")
-            hydroclass_job.addArguments(radarfilename)
-            hydroclass_job.addArguments("-c", radarconfigfilename, "-o", hydroclass_outputfilename, "-t", "1", "-m", "VHS", "-d", "membership_functions/", "-s", soundingfilename)
-            
-            hydroclass_job.uses(radarfile, link=Link.INPUT)
-            hydroclass_job.uses(radarconfigfile, link=Link.INPUT)
-            hydroclass_job.uses(soundingfile, link=Link.INPUT)
-            hydroclass_job.uses(hydroclass_outputfile, link=Link.OUTPUT, transfer=True, register=False)
-            hydroclass_job.uses(hydroclass_cfradialfile, link=Link.OUTPUT, transfer=True, register=False)
-            #hydroclass_job.profile("pegasus", "label", "label")
-            dax.addJob(hydroclass_job)
+                nexrad_hydroclass_job = Job("hydroclass")
+                nexrad_hydroclass_job.addArguments(radarfilename)
+                nexrad_hydroclass_job.addArguments("-c", radarconfigfilename, "-o", nexrad_hydroclass_outputfilename, "-t", "1", "-m", "VHS", "-d", "/opt/hydroclass/membership_functions/", "-s", soundingfilename)
+                nexrad_hydroclass_job.uses(radarfile, link=Link.INPUT)
+                nexrad_hydroclass_job.uses(radarconfigfile, link=Link.INPUT)
+                nexrad_hydroclass_job.uses(nexrad_hydroclass_outputfile, link=Link.OUTPUT, transfer=True, register=False)
+                nexrad_hydroclass_job.uses(soundingfile, link=Link.INPUT)
+                dax.addJob(nexrad_hydroclass_job)
+                nexrad_hydro_grid_job = Job("Radx2Grid")
+                nexrad_hydro_grid_job.addArguments("-v", "-params", radx_configfilename, "-f", nexrad_hydroclass_outputfilename, "-outdir", "./", "-outname", hydroclass_outputcartfilename)
+                nexrad_hydro_grid_job.uses(radx_configfile, link=Link.INPUT)
+                nexrad_hydro_grid_job.uses(nexrad_hydroclass_outputfile, link=Link.INPUT)
+                nexrad_hydro_grid_job.uses(hydroclass_outputcartfile, link=Link.OUTPUT, transfer=True, register=False)
+                dax.addJob(nexrad_hydro_grid_job)
+            else: 
+                hydroclass_cfradialfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf.cfradial"
+                hydroclass_cfradialfile = File(hydroclass_cfradialfilename)
+                hydroclass_outputfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf"
+                hydroclass_outputfile = File(hydroclass_outputfilename)
+                hydroclass_job = Job("hydroclass")
+                hydroclass_job.addArguments(radarfilename)
+                hydroclass_job.addArguments("-c", radarconfigfilename, "-o", hydroclass_outputfilename, "-t", "1", "-m", "VHS", "-d", "/opt/hydroclass/membership_functions/", "-s", soundingfilename)
+                hydroclass_job.uses(radarfile, link=Link.INPUT)
+                hydroclass_job.uses(radarconfigfile, link=Link.INPUT)
+                hydroclass_job.uses(hydroclass_outputfile, link=Link.OUTPUT, transfer=True, register=False)
+                hydroclass_job.uses(soundingfile, link=Link.INPUT)
+                hydroclass_job.uses(hydroclass_cfradialfile, link=Link.OUTPUT, transfer=True, register=False)
+                #hydroclass_job.profile("pegasus", "label", "label")
+                dax.addJob(hydroclass_job)
 
+                hydro_grid_job = Job("Radx2Grid")
+                hydro_grid_job.addArguments("-v", "-params", radx_configfilename, "-f", hydroclass_outputfilename, "-outdir", "./", "-outname", hydroclass_outputcartfilename)
+                hydro_grid_job.uses(radx_configfile, link=Link.INPUT)
+                hydro_grid_job.uses(hydroclass_outputfile, link=Link.INPUT)
+                hydro_grid_job.uses(hydroclass_outputcartfile, link=Link.OUTPUT, transfer=True, register=False)
+                dax.addJob(hydro_grid_job)
         # Write the DAX file
         daxfile = os.path.join(self.outdir, dax.name+".dax")
         dax.writeXMLFile(daxfile)
