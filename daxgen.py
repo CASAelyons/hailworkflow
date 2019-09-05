@@ -118,7 +118,7 @@ class single_hail_workflow(object):
                 dax.addJob(hydro_grid_job)
 
                 netcdf2png_colorscalefilename = "standard_hmc_single.png"
-                netcdf2png_colorscalefile = File(netcdf2png_colorscale)
+                netcdf2png_colorscalefile = File(netcdf2png_colorscalefilename)
                 netcdf2png_outputfilename = radarloc + "-" + file_ymd + "-" + file_hms + "-hmc.png"
                 netcdf2png_outputfile = File(netcdf2png_outputfilename)
                 
@@ -126,9 +126,9 @@ class single_hail_workflow(object):
                 netcdf2png_job.addArguments("-p", "-39.7,-39.7,0:-39.7,+39.7,0:+39.7,-39.7,0", "-t", "hmc", "-c", netcdf2png_colorscalefilename, "-q", "245", "-o", netcdf2png_outputfilename)
                 netcdf2png_job.addArguments(hydroclass_outputfilename)
                 netcdf2png_job.uses(netcdf2png_colorscalefile, link=Link.INPUT)
-                netcdf2png_job.uses(netcdf2png_outputfile, link=Link.OUTPUT, transfer=True, register=False)
                 netcdf2png_job.uses(hydroclass_outputfile, link=Link.INPUT)
-                dax.addJob(netcdf2png_job)
+                netcdf2png_job.uses(netcdf2png_outputfile, link=Link.OUTPUT, transfer=True, register=False)
+		dax.addJob(netcdf2png_job)
                 
         # Write the DAX file
         daxfile = os.path.join(self.outdir, dax.name+".dax")
@@ -141,7 +141,7 @@ class single_hail_workflow(object):
         
 if __name__ == '__main__':
     parser = ArgumentParser(description="Single Hail Workflow")
-    parser.add_argument("-f", "--files", metavar="INPUT_FILE", type=str, nargs="+", help="Forecast Filename", required=True)
+    parser.add_argument("-f", "--files", metavar="INPUT_FILE", type=str, nargs="+", help="Filename", required=True)
     parser.add_argument("-o", "--outdir", metavar="OUTPUT_LOCATION", type=str, help="DAX Directory", required=True)
 
     args = parser.parse_args()
