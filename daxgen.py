@@ -104,7 +104,7 @@ class single_hail_workflow(object):
                 hydroclass_job.addArguments("-c", radarconfigfilename, "-o", hydroclass_outputfilename, "-t", "1", "-m", "VHS", "-d", "/opt/hydroclass/membership_functions/", "-s", soundingfilename)
                 hydroclass_job.uses(radarfile, link=Link.INPUT)
                 hydroclass_job.uses(radarconfigfile, link=Link.INPUT)
-                hydroclass_job.uses(hydroclass_outputfile, link=Link.OUTPUT, transfer=True, register=False)
+                hydroclass_job.uses(hydroclass_outputfile, link=Link.OUTPUT, transfer=False, register=False)
                 hydroclass_job.uses(soundingfile, link=Link.INPUT)
                 hydroclass_job.uses(hydroclass_cfradialfile, link=Link.OUTPUT, transfer=False, register=False)
                 #hydroclass_job.profile("pegasus", "label", "label")
@@ -116,6 +116,20 @@ class single_hail_workflow(object):
                 hydro_grid_job.uses(hydroclass_cfradialfile, link=Link.INPUT)
                 hydro_grid_job.uses(hydroclass_outputcartfile, link=Link.OUTPUT, transfer=True, register=False)
                 dax.addJob(hydro_grid_job)
+
+                netcdf2png_colorscalefilename = "standard_hmc_single.png"
+                netcdf2png_colorscalefile = File(netcdf2png_colorscale)
+                netcdf2png_outputfilename = radarloc + "-" + file_ymd + "-" + file_hms + "-hmc.png"
+                netcdf2png_outputfile = File(netcdf2png_outputfilename)
+                
+                netcdf2png_job = Job("netcdf2png")
+                netcdf2png_job.addArguments("-p", "-39.7,-39.7,0:-39.7,+39.7,0:+39.7,-39.7,0", "-t", "hmc", "-c", netcdf2png_colorscalefilename, "-q", "245", "-o", netcdf2png_outputfilename)
+                netcdf2png_job.addArguments(hydroclass_outputfilename)
+                netcdf2png_job.uses(netcdf2png_colorscalefile, link=Link.INPUT)
+                netcdf2png_job.uses(netcdf2png_outputfile, link=Link.OUTPUT, transfer=True, register=False)
+                netcdf2png_job.uses(hydroclass_outputfile, link=Link.INPUT)
+                dax.addJob(netcdf2png_job)
+                
         # Write the DAX file
         daxfile = os.path.join(self.outdir, dax.name+".dax")
         dax.writeXMLFile(daxfile)
