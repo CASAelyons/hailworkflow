@@ -74,7 +74,7 @@ tr Radx2Grid {
 }
 
 tr hc_composite {
-   	site condorpool {
+ 	site condorpool {
 	     	container "single_hail_container"
 		pfn "/opt/hydroclass/hc_composite"
 		arch "x86_64"
@@ -101,20 +101,37 @@ tr hc_composite {
 #	}
 #}
 
-#tr merged_netcdf2png {	
-#   	site condorpool {
-#                container "single_hail_container"
-#		pfn "/opt/netcdf2png/merged_netcdf2png"	
-#		arch "x86_64"
-#		os "LINUX"
-#		type "INSTALLED"
-#	}
- #  	site condorpool_nfs {
-  #              container "single_hail_container_nfs"
-#		pfn "/opt/netcdf2png/merged_netcdf2png"	
-#		arch "x86_64"
-#		os "LINUX"
-#		type "INSTALLED"
-#	}
-#}
+tr netcdf2png {
+   	site condorpool {
+	     	container "single_hail_container"
+		pfn "/opt/hydroclass_netcdf2png/netcdf2png"
+		arch "x86_64"
+		os "LINUX"
+		type "INSTALLED"
+	}
+	site condorpool_nfs {
+	     	container "single_hail_container_nfs"
+		pfn "/opt/hydroclass_netcdf2png/merged_hydroclass_netcdf2png"
+		arch "x86_64"
+		os "LINUX"
+		type "INSTALLED"
+	}
+}
+
+tr merged_hydroclass_netcdf2png {	
+      	site condorpool {
+                container "single_hail_container"
+		pfn "/opt/hydroclass_netcdf2png/merged_hydroclass_netcdf2png"	
+		arch "x86_64"
+		os "LINUX"
+		type "INSTALLED"
+	}
+  	site condorpool_nfs {
+	        container "single_hail_container_nfs"
+		pfn "/opt/hydroclass_netcdf2png/merged_hydroclass_netcdf2png"	
+		arch "x86_64"
+		os "LINUX"
+		type "INSTALLED"
+	}
+}
 
