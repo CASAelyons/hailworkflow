@@ -24,22 +24,23 @@ class composite_hail_workflow(object):
         for f in self.cart_files:
             cart_inputs.append(f)
 
-        inputtxtfilename = "/home/ldm/hailworkflow/input/composite_cart_input.txt"
-        inputtxt = open(inputtxtfilename, "w")
+        inputtxtfilenamefullpath = "/home/ldm/hailworkflow/input/composite_cart_input.txt"
+        inputtxt = open(inputtxtfilenamefullpath, "w")
         for f in cart_inputs:
             inputtxt.write(f)
             inputtxt.write("\n")
         inputtxt.close()
 
-        inputtxtfile = File("composite_cart_input.txt")
+	inputtxtfilename = "composite_cart_input.txt"
+        inputtxtfile = File(inputtxtfilename)
 
         string_end = self.cart_files[0].find("-")
         file_time = self.cart_files[0][string_end+1:string_end+16]
         file_ymd = file_time[0:8]
         file_hms = file_time[9:15]
-        print file_time
-        print file_ymd
-        print file_hms
+        #print file_time
+        #print file_ymd
+        #print file_hms
 
         composite_outputfilename = "COMPOSITE_" + file_time + ".nc"
         composite_outputfile = File(composite_outputfilename)
@@ -48,7 +49,10 @@ class composite_hail_workflow(object):
         composite_job.addArguments(inputtxtfilename)
         composite_job.addArguments(composite_outputfilename)
         composite_job.uses(inputtxtfile, link=Link.INPUT)
-        composite_job.uses(composite_outputfile, link=Link.OUTPUT, transfer=False, register=False)
+        for cartfile in cart_inputs:
+		composite_job.uses(cartfile, link=Link.INPUT)
+	
+	composite_job.uses(composite_outputfile, link=Link.OUTPUT, transfer=False, register=False)
         dax.addJob(composite_job)
 
         #netcdf2png_colorscalefilename = "standard_hmc_single.png"
