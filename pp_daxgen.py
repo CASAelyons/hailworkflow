@@ -62,9 +62,9 @@ class composite_hail_workflow(object):
         
         netcdf2png_job = Job("merged_hydroclass_netcdf2png")
         netcdf2png_job.addArguments("-z", "-1,6", "-c", netcdf2png_colorscalefilename, "-q", "245", "-o", netcdf2png_outputfilename)
-        netcdf2png_job.addArguments(hydroclass_outputfilename)
+        netcdf2png_job.addArguments(composite_outputfilename)
         netcdf2png_job.uses(netcdf2png_colorscalefile, link=Link.INPUT)
-        netcdf2png_job.uses(hydroclass_outputfile, link=Link.INPUT)
+        netcdf2png_job.uses(composite_outputfile, link=Link.INPUT)
         netcdf2png_job.uses(netcdf2png_outputfile, link=Link.OUTPUT, transfer=True, register=False)
 	dax.addJob(netcdf2png_job)
         
