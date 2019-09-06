@@ -55,18 +55,18 @@ class composite_hail_workflow(object):
 	composite_job.uses(composite_outputfile, link=Link.OUTPUT, transfer=False, register=False)
         dax.addJob(composite_job)
 
-        #netcdf2png_colorscalefilename = "standard_hmc_single.png"
-        #netcdf2png_colorscalefile = File(netcdf2png_colorscalefilename)
-        #netcdf2png_outputfilename = radarloc + "-" + file_ymd + "-" + file_hms + "-hmc.png"
-        #netcdf2png_outputfile = File(netcdf2png_outputfilename)
+        netcdf2png_colorscalefilename = "standard_mergedhmc_nosnow.png"
+        netcdf2png_colorscalefile = File(netcdf2png_colorscalefilename)
+        netcdf2png_outputfilename = "hca_" + file_ymd + "-" + file_hms + ".png"
+        netcdf2png_outputfile = File(netcdf2png_outputfilename)
         
-        #netcdf2png_job = Job("netcdf2png")
-        #netcdf2png_job.addArguments("-p", "-39.7,-39.7,0:-39.7,+39.7,0:+39.7,-39.7,0", "-t", "hmc", "-c", netcdf2png_colorscalefilename, "-q", "245", "-o", netcdf2png_outputfilename)
-        #netcdf2png_job.addArguments(hydroclass_outputfilename)
-        #netcdf2png_job.uses(netcdf2png_colorscalefile, link=Link.INPUT)
-        #netcdf2png_job.uses(hydroclass_outputfile, link=Link.INPUT)
-        #netcdf2png_job.uses(netcdf2png_outputfile, link=Link.OUTPUT, transfer=True, register=False)
-	#dax.addJob(netcdf2png_job)
+        netcdf2png_job = Job("merged_hydroclass_netcdf2png")
+        netcdf2png_job.addArguments("-z", "-1,6", "-c", netcdf2png_colorscalefilename, "-q", "245", "-o", netcdf2png_outputfilename)
+        netcdf2png_job.addArguments(hydroclass_outputfilename)
+        netcdf2png_job.uses(netcdf2png_colorscalefile, link=Link.INPUT)
+        netcdf2png_job.uses(hydroclass_outputfile, link=Link.INPUT)
+        netcdf2png_job.uses(netcdf2png_outputfile, link=Link.OUTPUT, transfer=True, register=False)
+	dax.addJob(netcdf2png_job)
         
         # Write the DAX file
         daxfile = os.path.join(self.outdir, dax.name+".dax")
