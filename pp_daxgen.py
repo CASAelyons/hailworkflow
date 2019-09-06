@@ -31,7 +31,7 @@ class composite_hail_workflow(object):
             inputtxt.write("\n")
         inputtxt.close()
 
-        inputtxtfile = File(inputtxtfilename)
+        inputtxtfile = File("composite_cart_input.txt")
 
         string_end = self.cart_files[0].find("-")
         file_time = self.cart_files[0][string_end+1:string_end+16]
@@ -45,7 +45,8 @@ class composite_hail_workflow(object):
         composite_outputfile = File(composite_outputfilename)
         
         composite_job = Job("hc_composite")
-        composite_job.addArguments(inputtxtfilename, composite_outputfilename)
+        composite_job.addArguments(inputtxtfilename)
+        composite_job.addArguments(composite_outputfilename)
         composite_job.uses(inputtxtfile, link=Link.INPUT)
         composite_job.uses(composite_outputfile, link=Link.OUTPUT, transfer=False, register=False)
         dax.addJob(composite_job)
