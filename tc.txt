@@ -84,23 +84,6 @@ tr hc_composite {
 	}
 }
 
-#tr hrt {
-#	site condorpool {
-#		container "single_hail_container"
-#		pfn "/opt/mrtV2/mrtV2"
-#		arch "x86_64"
-#		os "LINUX"
-#		type "INSTALLED"
-#	}
-#	site condorpool_nfs {
-#		container "single_hail_container_nfs"
-#		pfn "/opt/mrtV2/mrtV2"
-#		arch "x86_64"
-#		os "LINUX"
-#		type "INSTALLED"
-#	}
-#}
-
 tr netcdf2png {
    	site condorpool {
 	     	container "single_hail_container"
@@ -135,3 +118,19 @@ tr merged_hydroclass_netcdf2png {
 	}
 }
 
+tr hmt {
+       site condorpool {
+       	    	container "single_hail_container"
+		pfn "/opt/hmt/hmt"
+		arch "x86_64"
+		os "LINUX"
+		type "INSTALLED"
+	}
+	site condorpool_nfs {
+	     	container "single_hail_container_nfs"
+		pfn "/opt/hmt/hmt"
+		arch "x86_64"
+		os "LINUX"
+		type "INSTALLED"
+	}
+}

@@ -67,6 +67,17 @@ class composite_hail_workflow(object):
         netcdf2png_job.uses(composite_outputfile, link=Link.INPUT)
         netcdf2png_job.uses(netcdf2png_outputfile, link=Link.OUTPUT, transfer=True, register=False)
 	dax.addJob(netcdf2png_job)
+
+        hmt_configfilename = "hmt_config.txt"
+        hmt_configfile = File(hmt_configfilename)
+        hmt_outputfile = File("hmt_HAIL_CASA_" + file_ymd + "-" + file_hms + ".geojson")
+        hmt_job = Job("hmt")
+        hmt_job.addArguments("-c", hmt_configfilename)
+        hmt_job.addArguments(composite_outputfilename)
+        hmt_job.uses(hmt_configfile, link=Link.INPUT)
+        hmt_job.uses(composite_outputfile, link=Link.INPUT)
+        hmt_job.uses(hmt_outputfile, link=Link.OUTPUT, transfer=True, register=False)
+        dax.addJob(hmt_job)
         
         # Write the DAX file
         daxfile = os.path.join(self.outdir, dax.name+".dax")
