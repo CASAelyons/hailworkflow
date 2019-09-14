@@ -20,7 +20,7 @@ use threads;
 use threads::shared;
 
 our $input_data_dir;
-
+our @cart_input_files;
 ##Parse Command Line
 &command_line_parse;
 
@@ -51,13 +51,6 @@ sub file_monitor {
     sub new_files 
     {
 	my ($name, $event, $change) = @_;
-	#my %minhash;
-	#$minhash{"0min"} = 1;
-	#$minhash{"1min"} = 1;
-	#$minhash{"5min"} = 1;
-	#$minhash{"10min"} = 1;
-	#$minhash{"15min"} = 1;
-
 	@new_netcdf_files = $change->files_created;
 	my @dels = $change->files_deleted;
 	print "Added: ".join("\nAdded: ", @new_netcdf_files)."\n" if @new_netcdf_files;
@@ -67,46 +60,42 @@ sub file_monitor {
             ($pathstr, $filename) = $file =~ m|^(.*[/\\])([^/\\]+?)$|;
             my $suffix = substr($filename, -3, 3);
 	    
-	    if ($suffix eq ".nc") {
-		unlink $file;
+	    if ($suffix eq "cdf") {
+		print $filename . "\n";
+		$nexrad = index ($filename, 'burleson.tx');
+		if ($nexrad ne -1) {
+		    #print "this is nexrad data\n"; 
+		    my $ymdhmstr = substr($filename, -30, 13);
+		    foreach $pmatch (glob "$input_data_dir/*$ymdhmstr*cdf") {
+			#print "pmatch: " . $pmatch . "\n";
+			($thispathstr, $thisfilename) = $pmatch =~ m|^(.*[/\\])([^/\\]+?)$|;
+			my $indirpath = "/home/ldm/hailworkflow/input/" . $thisfilename;
+			copy($pmatch, $indirpath);
+			push @cart_input_files, $thisfilename;
+			unlink($pmatch);
+		    }
+		    my $wfdir = $ENV{'HAIL_WORKFLOW_DIR'};
+		    system("$wfdir/run_composite_wf.sh @cart_input_files");
+		    @cart_input_files = ();   
+		}
+		else {
+		    #print "this is casa data\n";
+		}
 	    }
 	    elsif ($suffix eq "png") {
-		my @split_arr = split /_/, $filename;
-		my $minstr = substr($split_arr[1], 0, -3);
-		if ($minstr < 10) { 
-		    $minstr = "00" . $minstr; 
-		}
-	        elsif ($minstr < 100) { 
-		    $minstr = "0" . $minstr; 
-		}
-		
-		my $hmsstr = substr($filename, -10, 6);
-		my $ymdstr = substr($filename, -19, 8);
-		my $pngpqins = "pqinsert -f EXP -p nowcast_" . $ymdstr . "-" . $hmsstr . "-" . $minstr . ".png " . $file;
-	        #print $pngpqins;
+		my $pngpqins = "pqinsert -f EXP -p " . $filename . " " . $file;
 		system($pngpqins);
-		#sleep 1;
+		sleep 1;
 		unlink $file;
 	    }
 	    elsif ($suffix eq "son") {
-		
-		my @split_arr = split /_/, $filename;
-		my $minstr = $split_arr[3];
-		if ($minstr < 10) {
-		    $minstr = "00" . $minstr;
-		}
-		elsif ($minstr < 100) {
-		    $minstr = "0" . $minstr;
-		}
-		my @split_arr_2 = split /-/, $split_arr[4];
-		my $ymdstr = $split_arr_2[0];
-		my $hmsstr = substr($split_arr_2[1], 0, 6);
-		#print "ymdstr: " . $ymdstr . " hmsstr: " . $hmsstr . " minstr: " . $minstr . "\n";
-		my $jsonpqins = "pqinsert -f EXP -p nowcast_" . $ymdstr . "-" . $hmsstr . "-" . $minstr . ".geojson "  . $file;
-		#print $jsonpqins;
+		my $jsonpqins = "pqinsert -f EXP -p " . $filename . " " . $file;
 		system($jsonpqins);
-		#sleep 1;
+		sleep 1;
 		unlink $file;
+	    }
+	    else {
+		print $filename . "\n";
 	    }
 	}
     }
