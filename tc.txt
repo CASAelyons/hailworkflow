@@ -118,17 +118,17 @@ tr merged_hydroclass_netcdf2png {
 	}
 }
 
-tr hmt {
+tr d3_hmt {
        site condorpool {
        	    	container "single_hail_container"
-		pfn "/opt/hmt/hmt"
+		pfn "/opt/d3_hmt/d3_hmt"
 		arch "x86_64"
 		os "LINUX"
 		type "INSTALLED"
 	}
 	site condorpool_nfs {
 	     	container "single_hail_container_nfs"
-		pfn "/opt/hmt/hmt"
+		pfn "/opt/d3_hmt/d3_hmt"
 		arch "x86_64"
 		os "LINUX"
 		type "INSTALLED"
