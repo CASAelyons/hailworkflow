@@ -94,7 +94,7 @@ tr netcdf2png {
 	}
 	site condorpool_nfs {
 	     	container "single_hail_container_nfs"
-		pfn "/opt/hydroclass_netcdf2png/merged_hydroclass_netcdf2png"
+		pfn "/opt/hydroclass_netcdf2png/netcdf2png"
 		arch "x86_64"
 		os "LINUX"
 		type "INSTALLED"
