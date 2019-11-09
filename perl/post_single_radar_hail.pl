@@ -83,13 +83,13 @@ sub file_monitor {
 		}
 	    }
 	    elsif ($suffix eq "png") {
-		my $pngpqins = "pqinsert -f EXP -p " . $filename . " " . $file;
+		my $pngpqins = "pqinsert -f EXP -p SC" . $filename . " " . $file;
 		system($pngpqins);
 		sleep 1;
 		unlink $file;
 	    }
 	    elsif ($suffix eq "son") {
-		my $jsonpqins = "pqinsert -f EXP -p " . $filename . " " . $file;
+		my $jsonpqins = "pqinsert -f EXP -p SC" . $filename . " " . $file;
 		system($jsonpqins);
 		sleep 1;
 		unlink $file;
