@@ -129,10 +129,10 @@ class single_hail_workflow(object):
                 
                 netcdf2png_job_2 = Job("netcdf2png")
                 netcdf2png_job_2.addArguments("-p", "-39.7,-39.7,0:-39.7,+39.7,0:+39.7,-39.7,0", "-t", "ref", "-c", netcdf2png_colorscale_ref_filename, "-q", "245", "-o", netcdf2png_output_ref_filename)
-                netcdf2png_job.addArguments(hydroclass_outputfilename)
-                netcdf2png_job.uses(netcdf2png_colorscale_ref_file, link=Link.INPUT)
-                netcdf2png_job.uses(hydroclass_outputfile, link=Link.INPUT)
-                netcdf2png_job.uses(netcdf2png_output_ref_file, link=Link.OUTPUT, transfer=True, register=False)
+                netcdf2png_job_2.addArguments(hydroclass_outputfilename)
+                netcdf2png_job_2.uses(netcdf2png_colorscale_ref_file, link=Link.INPUT)
+                netcdf2png_job_2.uses(hydroclass_outputfile, link=Link.INPUT)
+                netcdf2png_job_2.uses(netcdf2png_output_ref_file, link=Link.OUTPUT, transfer=True, register=False)
 		dax.addJob(netcdf2png_job_2)
 
                 netcdf2png_job = Job("netcdf2png")
