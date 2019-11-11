@@ -95,10 +95,24 @@ class single_hail_workflow(object):
                 nexrad_hydro_grid_job.uses(hydroclass_outputcartfile, link=Link.OUTPUT, transfer=True, register=False)
                 dax.addJob(nexrad_hydro_grid_job)
             else: 
+                netcdf2png_colorscale_ref_filename = "standard_ref.png"
+                netcdf2png_colorscale_ref_file = File(netcdf2png_colorscale_ref_filename)
+                netcdf2png_output_ref_filename = radarloc + "-" + file_ymd + "-" + file_hms + "-ref.png"
+                netcdf2png_output_ref_file = File(netcdf2png_output_ref_filename)
+                
+                netcdf2png_job_2 = Job("nc2png")
+                netcdf2png_job_2.addArguments("-p", "-39.7,-39.7,0:-39.7,+39.7,0:+39.7,-39.7,0", "-t", "ref", "-c", netcdf2png_colorscale_ref_filename, "-q", "245", "-o", netcdf2png_output_ref_filename)
+                netcdf2png_job_2.addArguments(radarfilename)
+                netcdf2png_job_2.uses(netcdf2png_colorscale_ref_file, link=Link.INPUT)
+                netcdf2png_job_2.uses(radarfile, link=Link.INPUT)
+                netcdf2png_job_2.uses(netcdf2png_output_ref_file, link=Link.OUTPUT, transfer=True, register=False)
+                dax.addJob(netcdf2png_job_2)
+
                 hydroclass_cfradialfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf.cfradial"
                 hydroclass_cfradialfile = File(hydroclass_cfradialfilename)
                 hydroclass_outputfilename = radarloc + "-" + file_ymd + "-" + file_hms + ".hc.netcdf"
                 hydroclass_outputfile = File(hydroclass_outputfilename)
+                
                 hydroclass_job = Job("hydroclass")
                 hydroclass_job.addArguments(radarfilename)
                 hydroclass_job.addArguments("-c", radarconfigfilename, "-o", hydroclass_outputfilename, "-t", "1", "-m", "VHS", "-d", "/opt/hydroclass/membership_functions/", "-s", soundingfilename)
@@ -122,19 +136,6 @@ class single_hail_workflow(object):
                 netcdf2png_outputfilename = radarloc + "-" + file_ymd + "-" + file_hms + "-hmc.png"
                 netcdf2png_outputfile = File(netcdf2png_outputfilename)
                 
-                netcdf2png_colorscale_ref_filename = "standard_ref.png"
-                netcdf2png_colorscale_ref_file = File(netcdf2png_colorscale_ref_filename)
-                netcdf2png_output_ref_filename = radarloc + "-" + file_ymd + "-" + file_hms + "-ref.png"
-                netcdf2png_output_ref_file = File(netcdf2png_output_ref_filename)
-                
-                netcdf2png_job_2 = Job("netcdf2png")
-                netcdf2png_job_2.addArguments("-p", "-39.7,-39.7,0:-39.7,+39.7,0:+39.7,-39.7,0", "-t", "ref", "-c", netcdf2png_colorscale_ref_filename, "-q", "245", "-o", netcdf2png_output_ref_filename)
-                netcdf2png_job_2.addArguments(radarfilename)
-                netcdf2png_job_2.uses(netcdf2png_colorscale_ref_file, link=Link.INPUT)
-                netcdf2png_job_2.uses(radarfile, link=Link.INPUT)
-                netcdf2png_job_2.uses(netcdf2png_output_ref_file, link=Link.OUTPUT, transfer=True, register=False)
-		dax.addJob(netcdf2png_job_2)
-
                 netcdf2png_job = Job("netcdf2png")
                 netcdf2png_job.addArguments("-p", "-39.7,-39.7,0:-39.7,+39.7,0:+39.7,-39.7,0", "-t", "hmc", "-c", netcdf2png_colorscalefilename, "-q", "245", "-o", netcdf2png_outputfilename)
                 netcdf2png_job.addArguments(hydroclass_outputfilename)
