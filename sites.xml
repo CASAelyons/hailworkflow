@@ -20,7 +20,9 @@
      </directory>
      <profile namespace="pegasus" key="style">condor</profile>
      <profile namespace="pegasus" key="data.configuration">nonsharedfs</profile>
+     <profile namespace="pegasus" key="auxillary.local">true</profile>
      <profile namespace="condor" key="universe">vanilla</profile>
+     <profile namespace="env" key="PATH">/home/ldm/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/ldm/.local/bin:/home/ldm/bin</profile>
    </site>
 </sitecatalog>
 
