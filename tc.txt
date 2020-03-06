@@ -1,16 +1,8 @@
-cont single_hail_container {
+cont hail_container {
     type "singularity"
     image_site "condorpool"
-    image "file://${PWD}/bin/hail_singularity.img"
-    #profile env "SEQEXEC_CPUS" "4"
-}
-
-cont single_hail_container_nfs {
-    type "singularity"
-    image_site "condorpool_nfs"
-    image "file://nfs/shared/hail_singularity.img"
+    image "file:///nfs/shared/ldm/hail_singularity.img"
     mount "/nfs/shared:/nfs/shared"
-    #profile env "SEQEXEC_CPUS" "4"
 }
 
 tr gunzip {
@@ -21,27 +13,11 @@ tr gunzip {
 	type "INSTALLED"
 	profile pegasus "label" "unzip"
     }
-    site condorpool_nfs {
-        pfn "/bin/gunzip"
-  	arch "x86_64"
-	os "LINUX"
-	type "INSTALLED"
-	profile pegasus "label" "unzip"
-    }
 }
 
 tr hydroclass {
    	site condorpool {
-	     	container "single_hail_container"
-		pfn "/opt/hydroclass/hydroclass"
-		arch "x86_64"
-		os "LINUX"
-		type "INSTALLED"
-		profile pegasus "label" "casa_job"
-		#profile pegasus "cores" "1"
-	}
-   	site condorpool_nfs {
-	     	container "single_hail_container_nfs"
+	     	container "hail_container"
 		pfn "/opt/hydroclass/hydroclass"
 		arch "x86_64"
 		os "LINUX"
@@ -53,7 +29,7 @@ tr hydroclass {
 
 tr RadxConvert {
         site condorpool {
-	     	 container "single_hail_container"
+	     	 container "hail_container"
                  pfn "/opt/hydroclass/RadxConvert"
                  arch "x86_64"
                  os "LINUX"
@@ -64,7 +40,7 @@ tr RadxConvert {
 
 tr Radx2Grid {
         site condorpool {
-       	    	container "single_hail_container"
+       	    	container "hail_container"
 		pfn "/opt/hydroclass/Radx2Grid"
 		arch "x86_64"
 		os "LINUX"
@@ -75,7 +51,7 @@ tr Radx2Grid {
 
 tr hc_composite {
  	site condorpool {
-	     	container "single_hail_container"
+	     	container "hail_container"
 		pfn "/opt/hydroclass/hc_composite"
 		arch "x86_64"
 		os "LINUX"
@@ -86,14 +62,7 @@ tr hc_composite {
 
 tr netcdf2png {
    	site condorpool {
-	     	container "single_hail_container"
-		pfn "/opt/hydroclass_netcdf2png/netcdf2png"
-		arch "x86_64"
-		os "LINUX"
-		type "INSTALLED"
-	}
-	site condorpool_nfs {
-	     	container "single_hail_container_nfs"
+	     	container "hail_container"
 		pfn "/opt/hydroclass_netcdf2png/netcdf2png"
 		arch "x86_64"
 		os "LINUX"
@@ -103,31 +72,17 @@ tr netcdf2png {
 
 tr nc2png {
         site condorpool {
-                container "single_hail_container"
+                container "hail_container"
                 pfn "/opt/nc2png/nc2png"
                 arch "x86_64"
                 os "LINUX"
 		   type "INSTALLED"
         }
-        site condorpool_nfs {
-	     container "single_hail_container_nfs"
-                pfn "/opt/nc2png/nc2png"
-                arch "x86_64"
-                os "LINUX"
-                type "INSTALLED"
-        }
 }
 
 tr merged_hydroclass_netcdf2png {	
       	site condorpool {
-                container "single_hail_container"
-		pfn "/opt/hydroclass_netcdf2png/merged_hydroclass_netcdf2png"	
-		arch "x86_64"
-		os "LINUX"
-		type "INSTALLED"
-	}
-  	site condorpool_nfs {
-	        container "single_hail_container_nfs"
+                container "hail_container"
 		pfn "/opt/hydroclass_netcdf2png/merged_hydroclass_netcdf2png"	
 		arch "x86_64"
 		os "LINUX"
@@ -137,14 +92,7 @@ tr merged_hydroclass_netcdf2png {
 
 tr d3_hmt {
        site condorpool {
-       	    	container "single_hail_container"
-		pfn "/opt/d3_hmt/d3_hmt"
-		arch "x86_64"
-		os "LINUX"
-		type "INSTALLED"
-	}
-	site condorpool_nfs {
-	     	container "single_hail_container_nfs"
+       	    	container "hail_container"
 		pfn "/opt/d3_hmt/d3_hmt"
 		arch "x86_64"
 		os "LINUX"
