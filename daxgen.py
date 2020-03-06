@@ -35,7 +35,7 @@ class single_hail_workflow(object):
             if f.endswith(".gz"):
                 radarfilename = f[:-3]
                 unzip = Job("gunzip")
-                unzip.addArguments(f)
+                unzip.addArguments("-f", f)
                 zipfile = File(f)
                 unzip.uses(zipfile, link=Link.INPUT)
                 unzip.uses(radarfilename, link=Link.OUTPUT, transfer=False, register=False)
